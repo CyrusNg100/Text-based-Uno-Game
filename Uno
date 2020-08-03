@@ -1,0 +1,517 @@
+import random
+
+def createDeck(): #Contains the whole deck of uno.
+    cards = ["R0", "R1", "R1", "R2", "R2", "R3", "R3", "R4", "R4", "R5", "R5","R6", "R6",
+             "R7", "R7", "R8", "R8", "R9", "R9", "R+2", "R+2", "RR", "RR", "RS", "RS",
+             "G0", "G1", "G1", "G2", "G2", "G3", "G3", "G4", "G4", "G5", "G5","G6", "G6",
+             "G7", "G7", "G8", "G8", "G9", "G9", "G+2", "G+2", "GR", "GR", "GS", "GS",
+             "B0", "B1", "B1", "B2", "B2", "B3", "B3", "B4", "B4", "B5", "B5","B6", "B6",
+             "B7", "B7", "B8", "B8", "B9", "B9", "B+2", "B+2", "BR", "BR", "BS", "BS",
+             "Y0", "Y1", "Y1", "Y2", "Y2", "Y3", "Y3", "Y4", "Y4", "Y5", "Y5","Y6", "Y6",
+             "Y7", "Y7", "Y8", "Y8", "Y9", "Y9", "Y+2", "Y+2", "YR", "YR", "YS", "YS",
+             "WD", "WD", "WD", "WD", "P4", "P4", "P4", "P4"]
+    return(cards)
+
+
+def Game():
+    
+    player1Hand = []
+    player2Hand = []
+    player3Hand = []
+    player4Hand = []
+    topCard = ""
+    playOrder = ["Player1", "Player2", "Player3", "Player4"] #Original order of play
+    deck = createDeck()
+    usedPile = []
+    
+    for i in range(7): #Deals 7 random cards to each player.
+        d1 = random.choice(deck)
+        player1Hand.append(d1)
+        deck.remove(d1)
+        d2 = random.choice(deck)
+        player2Hand.append(d2)
+        deck.remove(d2)
+        d3 = random.choice(deck)
+        player3Hand.append(d3)
+        deck.remove(d3)
+        d4 = random.choice(deck)
+        player4Hand.append(d4)
+        deck.remove(d4)
+    
+    topCard = random.choice(deck)
+    deck.remove(topCard)
+    usedPile.append(topCard)
+    #Chooses the top card to start with, the while loop makes sure its not a special card.
+    while topCard[1] == "R" or topCard[1] == "S" or topCard[1] == "+" or topCard == "WD" or topCard == "P4":
+            
+        topCard = random.choice(deck)
+        deck.remove(topCard)
+        usedPile.append(topCard)
+    #Explaining the rules.
+    print("You will be Player1.")
+    print("To put cards down type in card you want, if you need to draw, type in draw. When prompted to choose color, pick either B, R, G, Y.")
+    print("The key for cards: B = blue, R = red, G = green, Y = yellow.")
+    print("The numbers after represent numbers and the letters after R = reverse, S = skip, +2 = plus two.")
+    print("WD = wild card, P4 = plus four")
+    print("Ex: B4 is a blue four, RR is a red reverse, G+2 is a green plus two.")
+    print("\nThe rules of Uno: A card will be put on top and you will have to either match the color of that card")
+    print("or match the number of it. If you don't have a card that either matches color or number, then you can")
+    print("draw a card and end your turn. But if you have a WD or P4, you can put that down and pick a color of your choosing.")
+    print("There are special cards you can use: Reverse, order of play switches directions (clockwise to counterclockwise, or vice versa.)")
+    print("Skip, next player in sequence misses a turn. Plus two, next player in sequence draws two cards and misses a turn.")
+    print("Plus 4, player declares the next color to be matched; next player in sequence draws four cards and misses a turn.")
+    print("Wild card, player declares the next color to be matched.")
+    print("And the most important rule, when you have one card left say Uno!")
+    
+    #While loop to continuously keep playing until a player has no cards.
+    while len(player1Hand) != 0 and len(player2Hand) != 0 and len(player3Hand) != 0 and len(player4Hand) != 0:
+        
+        if len(deck)<5:    #If deck runs out of cards, then usedPile will be used as deck. 
+            deck = usedPile
+            
+        for i in range(4):   #Uses the list of players: playOrder to switch player's turns.
+
+            drew = 0
+            
+            if playOrder[i] == "Player1":
+                print("----------------")
+                print("\nPlayer1's turn!")
+                print("\nCard on top: " + topCard + "\n")
+                print(player1Hand)
+                
+                while True: #While loop for player to put in correct input.
+                    turn = input("Card or draw?: ")
+                    if turn == "Draw" or turn == "draw" or turn == "DRAW": #Draws card from deck and appends it to player's hand.
+                            draw = random.choice(deck)
+                            player1Hand.append(draw)
+                            deck.remove(draw)
+                            usedPile.append(draw)
+                            print("You drew: " + draw)
+                            drew += 1  #drew is used to deactivate the special cards for the next player.
+                            break
+                        
+                    if turn in player1Hand:
+                        if turn == "WD":
+                            colors = ["B", "R", "G", "Y"]
+                            color = input("What color?: ")
+                            player1Hand.remove(turn)
+                            usedPile.append(turn)
+                            true = True
+                            while true:                 #While loop to get correct input for color.
+                                if color not in colors:
+                                    print("Not a color, try again!")
+                                    color = input("What color?: ")
+                                else:
+                                    topCard = color
+                                    true = False
+                        elif turn == "P4":
+                            player1Hand.remove(turn)
+                            usedPile.append(turn)
+                            topCard = turn
+                        elif topCard[0] == turn[0] or topCard[1] == turn[1]: #Checks if the turn made matches the color of number of topCard.
+                            player1Hand.remove(turn)
+                            usedPile.append(turn)
+                            topCard = turn
+                        elif turn != topCard:
+                            print("Wrong card! Try Again!") #If player chooses a card in deck, but is not playable.
+                            continue
+                        break
+                    
+                    if turn not in player1Hand:    #If player randomly types things in.
+                        print("Wrong card! Try Again!")                    
+
+
+            if playOrder[i] == "Player2":
+                hand = player2Hand
+                print("\nPlayer2's turn!\n")
+                    
+            if playOrder[i] == "Player3":
+                hand = player3Hand
+                print("\nPlayer3's turn!\n")
+                                                #see what player is next and gives hand access to player's hand.
+            if playOrder[i] == "Player4":
+                hand = player4Hand
+                print("\nPlayer4's turn!\n")
+
+            if playOrder[i] != "Player1":
+                colors = ["B", "R", "Y", "G"]
+                print("Card on top: " + topCard)
+                    
+                for j in range(len(hand)):  #Goes through the player's hand until one can be played.
+                    turn = hand[j]
+                    if turn == "WD":
+                        randColor = random.choice(colors)
+                        hand.remove(turn)
+                        usedPile.append(turn)
+                        topCard = randColor
+                        print(playOrder[i] + " put down: " + turn + " and picked: " + randColor)
+                        break
+                    elif turn == "P4":
+                        hand.remove(turn)
+                        usedPile.append(turn)
+                        topCard = turn
+                        break
+                    elif topCard[0] == turn[0] or topCard[1] == turn[1]:
+                        hand.remove(turn)
+                        usedPile.append(turn)
+                        topCard = turn
+                        print(playOrder[i] + " put down: " + turn)
+                        break
+                    elif j == (len(hand)- 1):
+                        draw = random.choice(deck)
+                        hand.append(draw)
+                        deck.remove(draw)
+                        usedPile.append(draw)
+                        drew += 1
+                        print(playOrder[i] + " drew a card!")
+                        break
+                    
+                if turn != "P4":  #Prints out samething later for consistency.
+                    print(playOrder[i] + ": " + str(len(hand)) + " cards in hand.")
+                
+
+            topCard += " " #Allows the if statements below to work if 
+
+            if topCard[1] == "R": #Special card reverse, reverses the order of playOrder. Breaks off from for loop from main while loop.
+                if drew == 1:
+                    drew = 0
+                    
+                elif i == 0:
+                    print("\nThe order has been reversed!")
+                    orderReverse0 = [3,2,1,0]
+                    playOrder = [playOrder[i] for i in orderReverse0]
+                    break
+
+                elif i == 1:
+                    print("\nThe order has been reversed!")
+                    orderReverse1 = [0,3,2,1]
+                    playOrder = [playOrder[i] for i in orderReverse1]
+                    break
+
+                elif i == 2:
+                    print("\nThe order has been reversed!")
+                    orderReverse2 = [1,0,3,2]
+                    playOrder = [playOrder[i] for i in orderReverse2]
+                    break
+
+                elif i == 3:
+                    print("\nThe order has been reversed!")
+                    orderReverse3 = [2,1,0,3]
+                    playOrder = [playOrder[i] for i in orderReverse3]
+                    break
+
+            if topCard[1] == "S":  #Skip card, skips next person in order, rearrange order to skip. Breaks out off of for loop 
+                if drew == 1:      #from the top of main while loop.
+                    drew = 0
+                    
+                elif i == 0:
+                    print("\n" + playOrder[1] + " got skipped!")
+                    orderSkip0 = [2,3,0,1]
+                    playOrder = [playOrder[i] for i in orderSkip0]
+                    break
+
+                elif i == 1:
+                    print("\n" + playOrder[2] + " got skipped!")
+                    orderSkip1 = [3,0,1,2]
+                    playOrder = [playOrder[i] for i in orderSkip1]
+                    break
+
+                elif i == 2:
+                    print("\n" + playOrder[3] + " got skipped!")
+                    orderSkip2 = [0,1,2,3]
+                    playOrder = [playOrder[i] for i in orderSkip2]
+                    break
+
+                elif i == 3:
+                    print("\n" + playOrder[0] + " got skipped!")
+                    orderSkip3 = [1,2,3,0]
+                    playOrder = [playOrder[i] for i in orderSkip3]
+                    break
+                
+            if topCard[1] == "+": #The plus two card, same thing as skip, but appending two cards to next player.
+                if drew == 1:
+                    drew = 0
+                    
+                elif i == 0:
+                    if playOrder[1] == "Player1":
+                        hand = player1Hand
+                        
+                    if playOrder[1] == "Player2":
+                        hand = player2Hand
+                    
+                    if playOrder[1] == "Player3":
+                        hand = player3Hand
+                    
+                    if playOrder[1] == "Player4":
+                        hand = player4Hand
+                        
+                    draw1 = random.choice(deck)
+                    hand.append(draw1)
+                    deck.remove(draw1)
+                    draw2 = random.choice(deck)
+                    hand.append(draw2)
+                    deck.remove(draw2)
+                    print("\n" + playOrder[1] + " drew 2 cards!")
+                    orderSkip0 = [2,3,0,1]
+                    playOrder = [playOrder[i] for i in orderSkip0]
+                    break
+
+                elif i == 1:
+                    if playOrder[2] == "Player1":
+                        hand = player1Hand
+                        
+                    if playOrder[2] == "Player2":
+                        hand = player2Hand
+                    
+                    if playOrder[2] == "Player3":
+                        hand = player3Hand
+                    
+                    if playOrder[2] == "Player4":
+                        hand = player4Hand
+                        
+                    draw1 = random.choice(deck)
+                    hand.append(draw1)
+                    deck.remove(draw1)
+                    draw2 = random.choice(deck)
+                    hand.append(draw2)
+                    deck.remove(draw2)
+                    print("\n" + playOrder[2] + " drew 2 cards!")
+                    orderSkip1 = [3,0,1,2]
+                    playOrder = [playOrder[i] for i in orderSkip1]
+                    break
+
+                elif i == 2:
+                    if playOrder[3] == "Player1":
+                        hand = player1Hand
+                        
+                    if playOrder[3] == "Player2":
+                        hand = player2Hand
+                    
+                    if playOrder[3] == "Player3":
+                        hand = player3Hand
+                    
+                    if playOrder[3] == "Player4":
+                        hand = player4Hand
+                        
+                    draw1 = random.choice(deck)
+                    hand.append(draw1)
+                    deck.remove(draw1)
+                    draw2 = random.choice(deck)
+                    hand.append(draw2)
+                    deck.remove(draw2)
+                    print("\n" + playOrder[3] + " drew 2 cards!")
+                    orderSkip2 = [0,1,2,3]
+                    playOrder = [playOrder[i] for i in orderSkip2]
+                    break
+
+                elif i == 3:
+                    if playOrder[0] == "Player1":
+                        hand = player1Hand
+                        
+                    if playOrder[0] == "Player2":
+                        hand = player2Hand
+                    
+                    if playOrder[0] == "Player3":
+                        hand = player3Hand
+                    
+                    if playOrder[0] == "Player4":
+                        hand = player4Hand
+                        
+                    draw1 = random.choice(deck)
+                    hand.append(draw1)
+                    deck.remove(draw1)
+                    draw2 = random.choice(deck)
+                    hand.append(draw2)
+                    deck.remove(draw2)
+                    print("\n" + playOrder[0] + " drew 2 cards!")
+                    orderSkip3 = [1,2,3,0]
+                    playOrder = [playOrder[i] for i in orderSkip3]
+                    break
+
+            if topCard[0] == "P": #Plus four card, samething as plus two card, but with appending 4 cards instead.
+                if drew == 1:
+                    drew = 0
+
+                if playOrder[i] == "Player1":
+                    color = input("What color?: ")
+                    topCard = color + " "
+
+                if playOrder[i] != "Player1":
+                    colors = ["B ", "R ", "Y " ,"G "]
+                    randColor = random.choice(colors)
+                    print(playOrder[i] + " put down: " + topCard + " and picked: " + randColor)
+                    print(playOrder[i] + ": " + str(len(hand)) + " cards in hand.")
+                    topCard = randColor
+                    
+                if i == 0:
+                    
+                    if playOrder[1] == "Player1":
+                        hand = player1Hand
+                        
+                    if playOrder[1] == "Player2":
+                        hand = player2Hand
+                    
+                    if playOrder[1] == "Player3":
+                        hand = player3Hand
+                    
+                    if playOrder[1] == "Player4":
+                        hand = player4Hand
+                        
+                    draw1 = random.choice(deck)
+                    hand.append(draw1)
+                    deck.remove(draw1)
+                    draw2 = random.choice(deck)
+                    hand.append(draw2)
+                    deck.remove(draw2)
+                    draw3 = random.choice(deck)
+                    hand.append(draw3)
+                    deck.remove(draw3)
+                    draw4 = random.choice(deck)
+                    hand.append(draw4)
+                    deck.remove(draw4)
+                    
+                    print("\n" + playOrder[1] + " drew 4 cards!")
+                    orderSkip0 = [2,3,0,1]
+                    playOrder = [playOrder[i] for i in orderSkip0]
+                    break
+
+                if i == 1:
+                    if playOrder[2] == "Player1":
+                        hand = player1Hand
+                        
+                    if playOrder[2] == "Player2":
+                        hand = player2Hand
+                    
+                    if playOrder[2] == "Player3":
+                        hand = player3Hand
+                    
+                    if playOrder[2] == "Player4":
+                        hand = player4Hand
+                        
+                    draw1 = random.choice(deck)
+                    hand.append(draw1)
+                    deck.remove(draw1)
+                    draw2 = random.choice(deck)
+                    hand.append(draw2)
+                    deck.remove(draw2)
+                    draw3 = random.choice(deck)
+                    hand.append(draw3)
+                    deck.remove(draw3)
+                    draw4 = random.choice(deck)
+                    hand.append(draw4)
+                    deck.remove(draw4)
+                    
+                    print("\n" + playOrder[2] + " drew 4 cards!")
+                    orderSkip1 = [3,0,1,2]
+                    playOrder = [playOrder[i] for i in orderSkip1]
+                    break
+
+                if i == 2:
+                    if playOrder[3] == "Player1":
+                        hand = player1Hand
+                        
+                    if playOrder[3] == "Player2":
+                        hand = player2Hand
+                    
+                    if playOrder[3] == "Player3":
+                        hand = player3Hand
+                    
+                    if playOrder[3] == "Player4":
+                        hand = player4Hand
+                        
+                    draw1 = random.choice(deck)
+                    hand.append(draw1)
+                    deck.remove(draw1)
+                    draw2 = random.choice(deck)
+                    hand.append(draw2)
+                    deck.remove(draw2)
+                    draw3 = random.choice(deck)
+                    hand.append(draw3)
+                    deck.remove(draw3)
+                    draw4 = random.choice(deck)
+                    hand.append(draw4)
+                    deck.remove(draw4)
+                    
+                    print("\n" + playOrder[3] + " drew 4 cards!")
+                    orderSkip2 = [0,1,2,3]
+                    playOrder = [playOrder[i] for i in orderSkip2]
+                    break
+
+                if i == 3:
+                    if playOrder[0] == "Player1":
+                        hand = player1Hand
+                        
+                    if playOrder[0] == "Player2":
+                        hand = player2Hand
+                    
+                    if playOrder[0] == "Player3":
+                        hand = player3Hand
+                    
+                    if playOrder[0] == "Player4":
+                        hand = player4Hand
+                        
+                    draw1 = random.choice(deck)
+                    hand.append(draw1)
+                    deck.remove(draw1)
+                    draw2 = random.choice(deck)
+                    hand.append(draw2)
+                    deck.remove(draw2)
+                    draw3 = random.choice(deck)
+                    hand.append(draw3)
+                    deck.remove(draw3)
+                    draw4 = random.choice(deck)
+                    hand.append(draw4)
+                    deck.remove(draw4)
+                    
+                    print("\n" + playOrder[0] + " drew 4 cards!")
+                    orderSkip3 = [1,2,3,0]
+                    playOrder = [playOrder[i] for i in orderSkip3]
+                    break
+
+            if len(player1Hand) == 0:      #Prints out the player who won.
+                print("Player1 has won!!!")
+                break
+            
+            if len(player2Hand) == 0:
+                print("Player2 has won!!!")
+                break
+            
+            if len(player3Hand) == 0:
+                print("Player3 has won!!!")
+                break
+            
+            if len(player4Hand) == 0:
+                print("Player4 has won!!!")
+                break
+
+            if playOrder[i] == "Player1": #Promts user to type in Uno, if user don't input Uno, then they draw two cards.
+                if len(player1Hand) == 1:
+                    uno = input("You have one card left!: ")
+                    if uno != "Uno" and uno != "uno" and uno != "UNO":
+                        print(random.choice(playOrder) + " has called UNO on you!")
+                        draw = random.choice(deck)
+                        player1Hand.append(draw)
+                        deck.remove(draw)
+                        usedPile.append(draw)
+                        print("You drew: " + draw)
+                        draw = random.choice(deck)
+                        player1Hand.append(draw)
+                        deck.remove(draw)
+                        usedPile.append(draw)
+                        print("You drew: " + draw)
+
+            if playOrder[i] == "Player2":  #Get computer to automatically say Uno.
+                if len(player2Hand) == 1:
+                    print("Player2 has called UNO!")
+
+            if playOrder[i] == "Player3":
+                if len(player3Hand) == 1:
+                    print("Player3 has called UNO!")
+
+            if playOrder[i] == "Player4":
+                if len(player4Hand) == 1:
+                    print("Player4 has called UNO!")
+            
+
+
+Game()
